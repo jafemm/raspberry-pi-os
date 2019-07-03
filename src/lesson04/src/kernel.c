@@ -35,7 +35,7 @@ void kernel_main(void)
 		printf("error while starting process 2");
 		return;
 	}
-	res = copy_process((unsigned long)&process, (unsigned long)"abcde", (int) 7); //asigno tiempo de proceso
+	res = copy_process((unsigned long)&process, (unsigned long)"xyzw", (int) 7); //asigno tiempo de proceso
 	if (res != 0) {
 		printf("error while starting process 3");
 		return;
@@ -45,4 +45,3 @@ void kernel_main(void)
 		schedule();
 	}
 }
- 
