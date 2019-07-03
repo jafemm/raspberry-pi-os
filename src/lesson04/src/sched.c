@@ -21,7 +21,9 @@ void preempt_enable(void)
 void _schedule(void)
 {
 	preempt_disable();
+	int quantum = 3;				// defino el tiempo de CPU de cada proceso
 	int next,c;
+	int contador = 0;
 	struct task_struct * p;
 	while (1) {
 		c = -1;
@@ -29,6 +31,15 @@ void _schedule(void)
 		for (int i = 0; i < NR_TASKS; i++){
 			p = task[i];
 			if (p && p->state == TASK_RUNNING && p->counter > c) {
+				for (int j = 0; j < p->tiempo; j++){				// Para ejecutar un proceso un numero de veces
+					p->tiempo = p->tiempo-1;
+					contador++;
+					if(contador == quantum || p->tiempo == 0){
+						contador = 0;
+						switch_to(task[i+1]);					//cambio a siguiente proceso una vez que un proceso alcanzo el quantum
+						break;
+					}
+				}
 				c = p->counter;
 				next = i;
 			}
@@ -53,9 +64,9 @@ void schedule(void)
 	_schedule();
 }
 
-void switch_to(struct task_struct * next) 
+void switch_to(struct task_struct * next)
 {
-	if (current == next) 
+	if (current == next)
 		return;
 	struct task_struct * prev = current;
 	current = next;

@@ -25,18 +25,24 @@ void kernel_main(void)
 	enable_interrupt_controller();
 	enable_irq();
 
-	int res = copy_process((unsigned long)&process, (unsigned long)"12345");
+	int res = copy_process((unsigned long)&process, (unsigned long)"12345", (int) 5); //int asigno tiempo de cada proceso
 	if (res != 0) {
 		printf("error while starting process 1");
 		return;
 	}
-	res = copy_process((unsigned long)&process, (unsigned long)"abcde");
+	res = copy_process((unsigned long)&process, (unsigned long)"abcde", (int) 10); //asigno tiempo de proceso
 	if (res != 0) {
 		printf("error while starting process 2");
+		return;
+	}
+	res = copy_process((unsigned long)&process, (unsigned long)"abcde", (int) 7); //asigno tiempo de proceso
+	if (res != 0) {
+		printf("error while starting process 3");
 		return;
 	}
 
 	while (1){
 		schedule();
-	}	
+	}
 }
+ 
