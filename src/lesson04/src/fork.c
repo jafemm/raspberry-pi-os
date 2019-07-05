@@ -2,7 +2,7 @@
 #include "sched.h"
 #include "entry.h"
 
-int copy_process(unsigned long fn, unsigned long arg, int tiempo)
+int copy_process(unsigned long fn, unsigned long arg)
 {
 	preempt_disable();
 	struct task_struct *p;
@@ -14,7 +14,6 @@ int copy_process(unsigned long fn, unsigned long arg, int tiempo)
 	p->state = TASK_RUNNING;
 	p->counter = p->priority;
 	p->preempt_count = 1; //disable preemtion until schedule_tail
-	p->tiempo = tiempo;
 
 	p->cpu_context.x19 = fn;
 	p->cpu_context.x20 = arg;

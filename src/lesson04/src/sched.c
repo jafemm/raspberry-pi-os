@@ -17,36 +17,43 @@ void preempt_enable(void)
 	current->preempt_count--;
 }
 
+const unsigned int intervalo = 3000;		// tiempo CPU de cada proceso
+
+void temporizador ( void* p )
+{
+	curVal = get32(p->priority);   //Lee el valor del contador actual
+	curVal += interval;			//aumenta su valor
+	put32(TIMER_C1, curVal);	//ajusta el valor curVal al registro para la interrupcion 1
+}
+
 
 void _schedule(void)
 {
 	preempt_disable();
-	int quantum = 3;				// defino el tiempo de CPU de cada proceso
 	int next,c;
-	int contador = 0;
 	struct task_struct * p;
+	int burstTime;
 	while (1) {
-		c = -1;
-		next = 0;
+		int burstTime=0;
+		//c = -1;
+		//next = 0;
 		for (int i = 0; i < NR_TASKS; i++){
 			p = task[i];
-			if (p && p->state == TASK_RUNNING && p->counter > c) {
-				for (int j = 0; j < p->tiempo; j++){				// Para ejecutar un proceso un numero de veces
-					p->tiempo = p->tiempo-1;
-					contador++;
-					if(contador == quantum || p->tiempo == 0){
-						contador = 0;
-						switch_to(task[i+1]);					//cambio a siguiente proceso una vez que un proceso alcanzo el quantum
+			burstTime = p->priority; //priority se asigna cuando se crea el proceso
+			if (p && p->state == TASK_RUNNING) {
+				for (int j = 0; j < burstTime; j++){				// Para ejecutar un proceso un numero de priority veces
+					if((burstTime - p->counter) == intervalo || p->counter == 0){ //al restar el burstime con el counter tengo el tiempo de proceso en CPU
+						switch_to(task[i+1]);			//cambio a siguiente proceso una vez que un proceso alcanzo el quantum
 						break;
 					}
 				}
-				c = p->counter;
-				next = i;
+				//c = p->counter;
+				//next = i;
 			}
 		}
-		if (c) {
+		/*if (c) {
 			break;
-		}
+		}*/
 		for (int i = 0; i < NR_TASKS; i++) {
 			p = task[i];
 			if (p) {
@@ -54,7 +61,7 @@ void _schedule(void)
 			}
 		}
 	}
-	switch_to(task[next]);
+//	switch_to(task[next]);
 	preempt_enable();
 }
 
