@@ -19,13 +19,6 @@ void preempt_enable(void)
 
 const unsigned int intervalo = 3000;		// tiempo CPU de cada proceso
 
-void temporizador ( void* p )
-{
-	curVal = get32(p->priority);   //Lee el valor del contador actual
-	curVal += interval;			//aumenta su valor
-	put32(TIMER_C1, curVal);	//ajusta el valor curVal al registro para la interrupcion 1
-}
-
 
 void _schedule(void)
 {
